@@ -11,7 +11,7 @@ Eine Web-App für Lehrpersonen: Klassen verwalten, Anwesenheit erfassen und ausw
 - **Technik:** Reine Client-App (HTML/CSS/JavaScript), kein Server und kein Konto nötig.
 - **Daten:** Alle Daten bleiben im `localStorage` des Browsers, optional zusätzlich in einer lokalen Datei.
 - **Offline und installierbar:** Es werden keine externen Ressourcen geladen (Schriften, Icons und Styles sind gebündelt). Als gehostete Version (https) läuft die App dank Service Worker auch ohne Netz und lässt sich über **"App installieren"** (oben rechts, Chrome/Edge) bzw. *Teilen → Zum Home-Bildschirm* (iPad) wie eine normale App starten.
-- **Schnell:** Die ganze App lädt rund 460 KB (früher über 800 KB), weil die Symbole als Subset ausgeliefert werden (11 KB statt 375 KB). Beim Erfassen der Anwesenheit wird nur die angeklickte Karte neu gezeichnet, und die automatische Sitzordnung bewertet beim Optimieren nur die betroffenen Nachbarplätze neu.
+- **Schnell:** Die ganze App lädt rund 500 KB (früher über 800 KB), weil die Symbole als Subset ausgeliefert werden (11 KB statt 375 KB). Beim Erfassen der Anwesenheit wird nur die angeklickte Karte neu gezeichnet, und die automatische Sitzordnung bewertet beim Optimieren nur die betroffenen Nachbarplätze neu.
 
 ## Übersicht
 
@@ -127,7 +127,7 @@ python3 -m http.server 8000
 # dann http://localhost:8000 öffnen
 ```
 
-Alternativ `index.html` direkt im Browser öffnen.
+Alternativ `index.html` direkt im Browser öffnen. Achtung: Der Browser speichert die Daten dann getrennt von `localhost:8000`, die Klassen sind dort also nicht sichtbar.
 
 Auf `localhost` wird bewusst **kein Service Worker** registriert (alte Worker und Caches werden entfernt). So zeigt der Browser nach Code-Änderungen sofort die neuen Dateien. Nach Änderungen genügt ein normales Neuladen, bei Bedarf Cmd/Strg+Shift+R.
 
@@ -149,6 +149,7 @@ Struktur:
 - `theme.js` — setzt Hell/Dunkel vor dem ersten Zeichnen (kein Aufblitzen).
 - `sw.js` / `manifest.webmanifest` / `icon.svg` / `icons/` — PWA und Offline-Betrieb. Bei geänderten Dateinamen die Liste und `CACHE_NAME` in `sw.js` anpassen.
 - `tests/core.test.js` — Unit-Tests (`node:test`).
+- `Klassenmanager.app` — Mac-Starter (siehe „Lokal starten“); das eigentliche Skript liegt in `Contents/MacOS/Klassenmanager`.
 
 ## Online hosten
 
@@ -172,16 +173,25 @@ Die gehostete Version lässt sich im Browser als App installieren (Manifest + Ic
 [
   {
     "name": "7a",
+    "kind": "both",
+    "collectsPoints": false,
     "schedule": [
       { "weekday": 0, "time": "10:00" }
     ],
     "students": [
-      { "name": "Anna", "gender": "female", "sporty": true, "hobbies": ["Fussball", "Tennis"] },
-      { "name": "Max", "gender": "male", "sporty": false }
+      { "name": "Anna", "gender": "female", "sporty": true, "hobbies": ["Fussball", "Tennis"], "classTag": "7a" },
+      { "name": "Max", "gender": "male", "sporty": false },
+      "Lena M"
     ]
   }
 ]
 ```
 
-- `gender`: `female`, `male` oder `diverse`.
-- `weekday`: `0` = Montag … `6` = Sonntag. `schedule` ist optional.
+- Pflicht ist nur `name`. Alle anderen Felder sind optional.
+- `gender`: `female`, `male`, `diverse` oder `unknown` (ohne Angabe, Standard).
+- `kind`: Unterrichtsart, `sport`, `room` (Klassenzimmer) oder `both` (Standard).
+- `collectsPoints`: `true` aktiviert den Punkte-Tracker.
+- `weekday`: `0` = Montag … `6` = Sonntag.
+- `classTag`: Klassenkürzel bei gemischten Gruppen (max. 20 Zeichen).
+- Schüler(innen) dürfen auch nur als Name (Text) angegeben werden.
+- Gibt es die Klasse schon, werden nur fehlende Schüler(innen) ergänzt.

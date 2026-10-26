@@ -2387,10 +2387,25 @@ function applySeatingSize() {
     const cols = Math.min(16, Math.max(2, parseInt(document.getElementById('seating-cols').value, 10) || plan.cols));
     const rows = Math.min(12, Math.max(2, parseInt(document.getElementById('seating-rows').value, 10) || plan.rows));
     if (cols === plan.cols && rows === plan.rows) return;
+    // Entspricht die Anordnung einer Vorlage, wird sie auf das neue Raster fortgesetzt
+    // (z.B. 9 statt 6 Tische hintereinander), sonst bleiben neue Reihen/Spalten leer.
+    const posKey = ds => ds.map(d => d.x + ',' + d.y).sort().join(';');
+    const current = posKey(plan.desks);
+    const kind = plan.desks.length ? ['rows', 'groups', 'u'].find(k => posKey(seatingPreset(k, plan.cols, plan.rows)) === current) : null;
     withUndo('Rastergrösse geändert.', () => {
+        const grows = cols > plan.cols || rows > plan.rows;
+        if (kind) {
+            const old = new Map(plan.desks.map(d => [d.x + ',' + d.y, d]));
+            plan.desks = seatingPreset(kind, cols, rows).map(d => {
+                const o = old.get(d.x + ',' + d.y);
+                return o ? { ...d, s: o.s, l: o.l } : d;
+            });
+        } else {
+            plan.desks = plan.desks.filter(d => d.x < cols && d.y < rows);
+        }
         plan.cols = cols; plan.rows = rows;
-        plan.desks = plan.desks.filter(d => d.x < cols && d.y < rows);
         saveSeating(); renderSeating();
+        if (!kind && grows) setSeatMsg('Das Raster wurde vergrössert. Mit "Tische setzen" kannst du in den neuen Zellen Tische hinzufügen.');
     });
 }
 document.getElementById('seating-cols').addEventListener('change', applySeatingSize);

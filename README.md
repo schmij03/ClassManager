@@ -75,6 +75,7 @@ Jeder Reiter hat eine eigene Adresse (z.B. `…/#teams`), die beim Neuladen erha
 
 ### Sitzordnung
 - Pro Klasse ein Raster (bis 16 × 12): Tische per Klick **setzen oder entfernen**, oder eine **Vorlage** wählen (Reihen, Gruppentische, U-Form). **"Alle Tische löschen"** beginnt von vorn.
+- Wird das Raster vergrössert (z.B. 9 statt 6 Reihen), setzt sich eine Vorlagen-Anordnung automatisch auf die neuen Reihen und Spalten fort.
 - **Plätze tauschen:** Person mit Maus oder Finger auf einen anderen Tisch **ziehen** (oder zwei Tische nacheinander anklicken). Auf "Ohne Platz" ziehen gibt den Platz frei; das Schloss **fixiert** einen Platz.
 - **Automatisch erstellen** mit Optionen: Jungen/Mädchen abwechselnd, "Nicht zusammen"-Regeln beachten, nur Anwesende vom letzten Termin. Fixierte Plätze bleiben.
 - Der aktuelle Plan wird **automatisch gespeichert**. Zusätzlich lassen sich pro Klasse beliebig viele benannte **Tischanordnungen** (nur Tische) und **Sitzordnungen** (Tische + Personen) ablegen und wieder laden.
